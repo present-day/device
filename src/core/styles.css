@@ -1,0 +1,114 @@
+/*
+ * @present-day/device. Every measurement comes from custom properties set by
+ * deviceVars() (lengths in percent of the device width, used as cqi), so the
+ * proportions live in one place: src/core/devices.ts.
+ *
+ * Theme it with:
+ *   --pd-device-color          body and buttons
+ *   --pd-device-screen-color   behind the content while it loads
+ *   --pd-device-edge           hairline around the body, for dark pages
+ *   --pd-device-shadow         drop shadow
+ */
+
+.pd-device {
+  /* cqi below is a percent of this element's width. */
+  container-type: inline-size;
+  display: block;
+  position: relative;
+  width: 100%;
+  max-width: var(--pd-device-max-width, none);
+}
+
+.pd-device-body {
+  display: block;
+  position: relative;
+  padding: calc(var(--pd-device-bezel) * 1cqi);
+  border-radius: calc(var(--pd-device-radius) * 1cqi);
+  background: var(--pd-device-color, #1c1c1e);
+  box-shadow:
+    inset 0 0 0 0.25cqi rgb(255 255 255 / 0.08),
+    0 0 0 1px var(--pd-device-edge, hsl(0 0% 50% / 0.25)),
+    var(--pd-device-shadow, 0 24px 48px -24px rgb(0 0 0 / 0.45));
+}
+
+.pd-device-screen {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  /* Keeps the rounded clip on a transformed iframe in Safari. */
+  isolation: isolate;
+  aspect-ratio: var(--pd-device-aspect);
+  border-radius: calc(var(--pd-device-screen-radius) * 1cqi);
+  background: var(--pd-device-screen-color, #000);
+}
+
+/* Content drawn at the screen's own size: a screenshot, an overlay. */
+.pd-device-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+img.pd-device-fill {
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Content laid out at the device's viewport (an iframe), scaled to the screen. */
+.pd-device-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  transform-origin: 0 0;
+  transform: scale(var(--pd-device-scale, 1));
+}
+/* Until the screen is measured the scale is unknown; don't flash it at 1:1. */
+.pd-device-screen:not([data-scaled]) .pd-device-viewport {
+  visibility: hidden;
+}
+
+.pd-device[data-interactive="false"] .pd-device-content {
+  pointer-events: none;
+}
+
+.pd-device-island {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--pd-device-island-top) * 1cqi);
+  left: 50%;
+  width: calc(var(--pd-device-island-width) * 1cqi);
+  height: calc(var(--pd-device-island-height) * 1cqi);
+  translate: -50% 0;
+  border-radius: 999px;
+  background: #000;
+  pointer-events: none;
+}
+
+.pd-device-button {
+  position: absolute;
+  display: block;
+  background: var(--pd-device-color, #1c1c1e);
+}
+.pd-device-button[data-side="left"],
+.pd-device-button[data-side="right"] {
+  top: var(--pd-device-button-start);
+  height: var(--pd-device-button-length);
+  width: calc(var(--pd-device-button-depth) * 1cqi);
+}
+.pd-device-button[data-side="left"] {
+  right: 100%;
+  border-radius: 2px 0 0 2px;
+}
+.pd-device-button[data-side="right"] {
+  left: 100%;
+  border-radius: 0 2px 2px 0;
+}
+.pd-device-button[data-side="top"] {
+  bottom: 100%;
+  left: var(--pd-device-button-start);
+  width: var(--pd-device-button-length);
+  height: calc(var(--pd-device-button-depth) * 1cqi);
+  border-radius: 2px 2px 0 0;
+}
